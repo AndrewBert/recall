@@ -1,7 +1,7 @@
 import { useReducer, useEffect, useCallback } from 'react'
 import { Rating, type Grade } from 'ts-fsrs'
 import type { CardRecord } from '../models/types'
-import { processReview } from '../services/reviewService'
+import { processReview, undoReview } from '../services/reviewService'
 import { useDueCards } from './useDueCards'
 
 type SessionPhase = 'loading' | 'studying' | 'flipped' | 'complete' | 'empty'
@@ -13,6 +13,13 @@ interface SessionStats {
   easy: number
 }
 
+interface UndoInfo {
+  previousCard: CardRecord
+  reviewLogId: number
+  rating: Grade
+  wasRequeued: boolean
+}
+
 interface SessionState {
   phase: SessionPhase
   queue: CardRecord[]
@@ -20,12 +27,16 @@ interface SessionState {
   requeuedIds: Set<number>
   stats: SessionStats
   error: string | null
+  lastUndo: UndoInfo | null
+  isRating: boolean
 }
 
 type SessionAction =
   | { type: 'INIT'; cards: CardRecord[] }
   | { type: 'FLIP' }
-  | { type: 'RATED'; rating: Grade; updatedCard: CardRecord }
+  | { type: 'RATING_START' }
+  | { type: 'RATED'; rating: Grade; updatedCard: CardRecord; reviewLogId: number; previousCard: CardRecord }
+  | { type: 'UNDO' }
   | { type: 'ERROR'; message: string }
 
 function ratingToKey(rating: Grade): keyof SessionStats {
@@ -53,10 +64,15 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
         requeuedIds: new Set(),
         stats: { ...emptyStats },
         error: null,
+        lastUndo: null,
+        isRating: false,
       }
     }
     case 'FLIP': {
-      return { ...state, phase: 'flipped', error: null }
+      return { ...state, phase: 'flipped', error: null, lastUndo: null }
+    }
+    case 'RATING_START': {
+      return { ...state, isRating: true }
     }
     case 'RATED': {
       const key = ratingToKey(action.rating)
@@ -64,6 +80,7 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
 
       let newQueue = state.queue
       const currentCard = state.queue[state.currentIndex]
+      let wasRequeued = false
 
       // Re-queue Again-rated cards max once
       if (
@@ -71,6 +88,7 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
         !state.requeuedIds.has(currentCard.id)
       ) {
         newQueue = [...state.queue, action.updatedCard]
+        wasRequeued = true
       }
 
       const newRequeued = new Set(state.requeuedIds)
@@ -89,10 +107,50 @@ function reducer(state: SessionState, action: SessionAction): SessionState {
         requeuedIds: newRequeued,
         stats: newStats,
         error: null,
+        isRating: false,
+        lastUndo: {
+          previousCard: action.previousCard,
+          reviewLogId: action.reviewLogId,
+          rating: action.rating,
+          wasRequeued,
+        },
+      }
+    }
+    case 'UNDO': {
+      if (!state.lastUndo) return state
+
+      const { previousCard, rating, wasRequeued } = state.lastUndo
+      const key = ratingToKey(rating)
+      const newStats = { ...state.stats, [key]: state.stats[key] - 1 }
+
+      let newQueue = state.queue
+      const newRequeued = new Set(state.requeuedIds)
+
+      if (wasRequeued) {
+        // Remove the re-queued copy (last item)
+        newQueue = newQueue.slice(0, -1)
+        newRequeued.delete(previousCard.id)
+      }
+
+      // Replace the card at the undone position with the previous card state
+      const undoneIndex = state.currentIndex - 1
+      newQueue = [...newQueue]
+      newQueue[undoneIndex] = previousCard
+
+      return {
+        ...state,
+        phase: 'flipped',
+        queue: newQueue,
+        currentIndex: undoneIndex,
+        requeuedIds: newRequeued,
+        stats: newStats,
+        error: null,
+        lastUndo: null,
+        isRating: false,
       }
     }
     case 'ERROR': {
-      return { ...state, error: action.message }
+      return { ...state, error: action.message, isRating: false }
     }
   }
 }
@@ -104,6 +162,8 @@ const initialState: SessionState = {
   requeuedIds: new Set(),
   stats: { ...emptyStats },
   error: null,
+  lastUndo: null,
+  isRating: false,
 }
 
 export function useStudySession(deckId: number) {
@@ -131,10 +191,12 @@ export function useStudySession(deckId: number) {
 
   const rate = useCallback(
     async (rating: Grade) => {
-      if (state.phase !== 'flipped' || !currentCard) return
+      if (state.phase !== 'flipped' || !currentCard || state.isRating) return
+      dispatch({ type: 'RATING_START' })
+      const previousCard = currentCard
       try {
-        const updated = await processReview(currentCard, rating)
-        dispatch({ type: 'RATED', rating, updatedCard: updated })
+        const { card: updated, reviewLogId } = await processReview(currentCard, rating)
+        dispatch({ type: 'RATED', rating, updatedCard: updated, reviewLogId, previousCard })
       } catch (err) {
         dispatch({
           type: 'ERROR',
@@ -142,8 +204,24 @@ export function useStudySession(deckId: number) {
         })
       }
     },
-    [state.phase, currentCard],
+    [state.phase, state.isRating, currentCard],
   )
+
+  const canUndo = state.lastUndo !== null && !state.isRating
+
+  const undo = useCallback(async () => {
+    if (!state.lastUndo || state.isRating) return
+    const { reviewLogId, previousCard } = state.lastUndo
+    try {
+      await undoReview(reviewLogId, previousCard)
+      dispatch({ type: 'UNDO' })
+    } catch (err) {
+      dispatch({
+        type: 'ERROR',
+        message: err instanceof Error ? err.message : 'Failed to undo review',
+      })
+    }
+  }, [state.lastUndo, state.isRating])
 
   return {
     phase: state.phase,
@@ -154,5 +232,7 @@ export function useStudySession(deckId: number) {
     error: state.error,
     flip,
     rate,
+    canUndo,
+    undo,
   }
 }

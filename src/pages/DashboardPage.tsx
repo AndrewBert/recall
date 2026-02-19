@@ -13,15 +13,21 @@ export default function DashboardPage() {
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null)
   const [deletingDeck, setDeletingDeck] = useState<Deck | null>(null)
 
-  const { decks, cardCounts, dueCounts } = useMemo(() => {
-    if (!dashboardDecks) return { decks: [], cardCounts: {}, dueCounts: {} }
+  const { decks, cardCounts, dueCounts, newCounts, learningCounts, reviewCounts } = useMemo(() => {
+    if (!dashboardDecks) return { decks: [], cardCounts: {}, dueCounts: {}, newCounts: {}, learningCounts: {}, reviewCounts: {} }
     const cardCounts: Record<number, number> = {}
     const dueCounts: Record<number, number> = {}
+    const newCounts: Record<number, number> = {}
+    const learningCounts: Record<number, number> = {}
+    const reviewCounts: Record<number, number> = {}
     for (const d of dashboardDecks) {
       cardCounts[d.id] = d.cardCount
       dueCounts[d.id] = d.dueCount
+      newCounts[d.id] = d.newCount
+      learningCounts[d.id] = d.learningCount
+      reviewCounts[d.id] = d.reviewCount
     }
-    return { decks: dashboardDecks, cardCounts, dueCounts }
+    return { decks: dashboardDecks, cardCounts, dueCounts, newCounts, learningCounts, reviewCounts }
   }, [dashboardDecks])
 
   if (isLoading) {
@@ -56,6 +62,9 @@ export default function DashboardPage() {
         decks={decks}
         cardCounts={cardCounts}
         dueCounts={dueCounts}
+        newCounts={newCounts}
+        learningCounts={learningCounts}
+        reviewCounts={reviewCounts}
         onEdit={(deck) => {
           setEditingDeck(deck)
           setFormOpen(true)

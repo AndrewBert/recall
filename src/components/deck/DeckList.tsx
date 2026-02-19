@@ -6,6 +6,9 @@ interface DeckListProps {
   decks: Deck[]
   cardCounts: Record<number, number>
   dueCounts: Record<number, number>
+  newCounts: Record<number, number>
+  learningCounts: Record<number, number>
+  reviewCounts: Record<number, number>
   onEdit: (deck: Deck) => void
   onDelete: (deck: Deck) => void
   onCreateFirst: () => void
@@ -15,6 +18,9 @@ export default function DeckList({
   decks,
   cardCounts,
   dueCounts,
+  newCounts,
+  learningCounts,
+  reviewCounts,
   onEdit,
   onDelete,
   onCreateFirst,
@@ -36,6 +42,9 @@ export default function DeckList({
           deck={deck}
           cardCount={cardCounts[deck.id] ?? 0}
           dueCount={dueCounts[deck.id] ?? 0}
+          newCount={newCounts[deck.id] ?? 0}
+          learningCount={learningCounts[deck.id] ?? 0}
+          reviewCount={reviewCounts[deck.id] ?? 0}
           onEdit={onEdit}
           onDelete={onDelete}
         />

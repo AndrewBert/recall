@@ -11,12 +11,16 @@ interface StudyCompleteProps {
   deckId: number
   stats: SessionStats
   totalCards: number
+  canUndo?: boolean
+  onUndo?: () => void
 }
 
 export default function StudyComplete({
   deckId,
   stats,
   totalCards,
+  canUndo,
+  onUndo,
 }: StudyCompleteProps) {
   return (
     <div className="text-center py-12 max-w-md mx-auto">
@@ -44,6 +48,17 @@ export default function StudyComplete({
           <div className="text-xs text-blue-500">Easy</div>
         </div>
       </div>
+
+      {canUndo && onUndo && (
+        <div className="mb-6">
+          <button
+            onClick={onUndo}
+            className="text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+          >
+            &#8617; Undo last rating <span className="hidden sm:inline">(Z)</span>
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row justify-center gap-3">
         <Link

@@ -87,4 +87,21 @@ This app follows **mobile-first design**. All Tailwind classes start with mobile
 - **Build config**: `npm run build` → output `dist/`
 - **SPA routing**: Handled automatically by Cloudflare Pages (no config needed)
 
+### Production Setup (Cloudflare Dashboard)
+
+The following must be configured manually in the Cloudflare dashboard:
+
+1. **Environment variables** (Workers & Pages → recall-1qw → Settings → Environment variables):
+   - `API_KEY` (Secret) — backend auth middleware checks this
+   - `VITE_API_KEY` (Secret) — Vite bakes this into frontend JS at build time
+   - Both must have the **same value**
+
+2. **D1 database binding** (Settings → Bindings → Add → D1 database):
+   - Variable name: `DB`
+   - Database: `flash-cards-db`
+
+3. **D1 migration**: Run `migrations/0001_initial.sql` in the D1 Console (skip the `PRAGMA` line)
+
+After changing env vars or bindings, **redeploy** for changes to take effect.
+
 Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.

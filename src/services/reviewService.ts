@@ -4,8 +4,13 @@ import { scheduler, toFSRSCard, applyFSRSResult } from './fsrs'
 import { apiFetch, remapCardFromApi } from './api'
 import { queryClient } from '../queryClient'
 
+export interface ReviewResult {
+  card: CardRecord
+  reviewLogId: number
+}
+
 /** Process a review: run FSRS client-side, POST result to API, return updated CardRecord with Date objects. */
-export async function processReview(cardRecord: CardRecord, rating: Grade) {
+export async function processReview(cardRecord: CardRecord, rating: Grade): Promise<ReviewResult> {
   const fsrsCard = toFSRSCard(cardRecord)
   const now = new Date()
   const result = scheduler.next(fsrsCard, now, rating)
@@ -43,7 +48,7 @@ export async function processReview(cardRecord: CardRecord, rating: Grade) {
     },
   }
 
-  const res = await apiFetch<{ card: Record<string, unknown> }>('/api/reviews', {
+  const res = await apiFetch<{ card: Record<string, unknown>; reviewLogId: number }>('/api/reviews', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
@@ -52,5 +57,39 @@ export async function processReview(cardRecord: CardRecord, rating: Grade) {
   queryClient.invalidateQueries({ queryKey: ['deck', cardRecord.deckId, 'due-cards'] })
   queryClient.invalidateQueries({ queryKey: ['deck', cardRecord.deckId, 'cards'] })
 
-  return remapCardFromApi(res.card)
+  return {
+    card: remapCardFromApi(res.card),
+    reviewLogId: res.reviewLogId,
+  }
+}
+
+/** Undo a review: delete review log and restore previous card state. */
+export async function undoReview(
+  reviewLogId: number,
+  previousCard: CardRecord,
+): Promise<void> {
+  await apiFetch('/api/reviews/' + reviewLogId, {
+    method: 'DELETE',
+    body: JSON.stringify({
+      cardId: previousCard.id,
+      previousCard: {
+        due: previousCard.due.toISOString(),
+        stability: previousCard.stability,
+        difficulty: previousCard.difficulty,
+        elapsed_days: previousCard.elapsed_days,
+        scheduled_days: previousCard.scheduled_days,
+        learning_steps: previousCard.learning_steps,
+        reps: previousCard.reps,
+        lapses: previousCard.lapses,
+        state: previousCard.state,
+        lastReview: previousCard.last_review instanceof Date
+          ? previousCard.last_review.toISOString()
+          : null,
+      },
+    }),
+  })
+
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', previousCard.deckId, 'due-cards'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', previousCard.deckId, 'cards'] })
 }

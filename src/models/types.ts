@@ -11,6 +11,9 @@ export interface Deck {
 export interface DashboardDeck extends Deck {
   cardCount: number
   dueCount: number
+  newCount: number
+  learningCount: number
+  reviewCount: number
 }
 
 export interface CardRecord {

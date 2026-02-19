@@ -22,6 +22,8 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
     error,
     flip,
     rate,
+    canUndo,
+    undo,
   } = session
 
   // Keyboard shortcuts -- skip when focus is in input/textarea
@@ -55,8 +57,13 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
             break
         }
       }
+
+      // Undo: Z key works during studying (after a rating) and complete phases
+      if ((phase === 'studying' || phase === 'complete') && (e.key === 'z' || e.key === 'Z') && canUndo) {
+        undo()
+      }
     },
-    [phase, flip, rate],
+    [phase, flip, rate, canUndo, undo],
   )
 
   useEffect(() => {
@@ -66,7 +73,13 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
 
   if (phase === 'complete') {
     return (
-      <StudyComplete deckId={deckId} stats={stats} totalCards={totalCards} />
+      <StudyComplete
+        deckId={deckId}
+        stats={stats}
+        totalCards={totalCards}
+        canUndo={canUndo}
+        onUndo={undo}
+      />
     )
   }
 
@@ -104,6 +117,18 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
       {/* Rating buttons -- only show after flip */}
       {phase === 'flipped' && (
         <RatingButtons card={currentCard} onRate={rate} />
+      )}
+
+      {/* Undo button -- show between rating and flipping next card */}
+      {phase === 'studying' && canUndo && (
+        <div className="text-center mt-4">
+          <button
+            onClick={undo}
+            className="text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+          >
+            &#8617; Undo last rating <span className="hidden sm:inline">(Z)</span>
+          </button>
+        </div>
       )}
 
       {/* Error message */}

@@ -5,6 +5,9 @@ interface DeckCardProps {
   deck: Deck
   cardCount: number
   dueCount: number
+  newCount: number
+  learningCount: number
+  reviewCount: number
   onEdit: (deck: Deck) => void
   onDelete: (deck: Deck) => void
 }
@@ -13,6 +16,9 @@ export default function DeckCard({
   deck,
   cardCount,
   dueCount,
+  newCount,
+  learningCount,
+  reviewCount,
   onEdit,
   onDelete,
 }: DeckCardProps) {
@@ -50,15 +56,31 @@ export default function DeckCard({
         </p>
       )}
       <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-500">
-          {cardCount} {cardCount === 1 ? 'card' : 'cards'}
-        </span>
-        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+        <div>
+          <span className="text-sm text-gray-500">
+            {cardCount} {cardCount === 1 ? 'card' : 'cards'}
+          </span>
           {dueCount > 0 && (
-            <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
-              {dueCount} due
-            </span>
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
+              {newCount > 0 && (
+                <span className="text-xs font-medium text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                  {newCount} new
+                </span>
+              )}
+              {learningCount > 0 && (
+                <span className="text-xs font-medium text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded">
+                  {learningCount} learning
+                </span>
+              )}
+              {reviewCount > 0 && (
+                <span className="text-xs font-medium text-green-700 bg-green-50 px-1.5 py-0.5 rounded">
+                  {reviewCount} review
+                </span>
+              )}
+            </div>
           )}
+        </div>
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           {dueCount > 0 && (
             <Link
               to={`/deck/${deck.id}/study`}

@@ -73,11 +73,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ),
   ])
 
+  // Get the inserted review log ID
+  const logRow = await context.env.DB.prepare(
+    'SELECT id FROM review_logs WHERE card_id = ? ORDER BY id DESC LIMIT 1',
+  ).bind(body.cardId).first<{ id: number }>()
+
   // Return the full updated card
   const row = await context.env.DB.prepare('SELECT * FROM cards WHERE id = ?')
     .bind(body.cardId).first()
 
   return Response.json({
+    reviewLogId: logRow!.id,
     card: {
       id: row!.id,
       deckId: row!.deck_id,
