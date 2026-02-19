@@ -4,7 +4,6 @@ import { createDeck, updateDeck, deleteDeck } from '../services/deckService'
 import DeckList from '../components/deck/DeckList'
 import DeckFormModal from '../components/deck/DeckFormModal'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
-import MigrationBanner from '../components/migration/MigrationBanner'
 import type { Deck } from '../models/types'
 
 export default function DashboardPage() {
@@ -33,8 +32,6 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <MigrationBanner hasExistingData={decks.length > 0} />
-
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Your Decks</h1>
