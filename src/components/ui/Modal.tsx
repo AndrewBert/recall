@@ -1,0 +1,44 @@
+import { useEffect, useRef, type ReactNode } from 'react'
+
+interface ModalProps {
+  open: boolean
+  onClose: () => void
+  title: string
+  children: ReactNode
+}
+
+export default function Modal({ open, onClose, title, children }: ModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+
+    if (open) {
+      dialog.showModal()
+    } else {
+      dialog.close()
+    }
+  }, [open])
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      className="rounded-lg p-0 backdrop:bg-black/50 max-w-lg w-full"
+    >
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl leading-none cursor-pointer"
+          >
+            &times;
+          </button>
+        </div>
+        {children}
+      </div>
+    </dialog>
+  )
+}
