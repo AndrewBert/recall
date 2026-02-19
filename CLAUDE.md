@@ -77,3 +77,5 @@ This app follows **mobile-first design**. All Tailwind classes start with mobile
 - **Auto-deploy**: Pushes to `master` on GitHub (`AndrewBert/recall`) trigger automatic builds
 - **Build config**: `npm run build` → output `dist/`
 - **SPA routing**: Handled automatically by Cloudflare Pages (no config needed)
+
+Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
