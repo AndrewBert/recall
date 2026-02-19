@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router'
-import { useLiveQuery } from 'dexie-react-hooks'
-import Dexie from 'dexie'
-import { db } from '../db/db'
 import { useDeck } from '../hooks/useDeck'
+import { useDeckCards } from '../hooks/useDeckCards'
+import { useDueCards } from '../hooks/useDueCards'
 import { addCard, updateCard, deleteCard } from '../services/cardService'
 import { deleteDeck, updateDeck } from '../services/deckService'
 import CardList from '../components/card/CardList'
@@ -17,21 +16,11 @@ export default function DeckDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const deckId = Number(id)
-  const deck = useDeck(deckId)
+  const { data: deck, isLoading: deckLoading } = useDeck(deckId)
+  const { data: cards, isLoading: cardsLoading } = useDeckCards(deckId)
+  const { data: dueCards, isLoading: dueLoading } = useDueCards(deckId)
 
-  const cards = useLiveQuery(
-    () => db.cards.where('deckId').equals(deckId).toArray(),
-    [deckId],
-  )
-
-  const dueCount = useLiveQuery(
-    () =>
-      db.cards
-        .where('[deckId+due]')
-        .between([deckId, Dexie.minKey], [deckId, new Date()])
-        .count(),
-    [deckId],
-  )
+  const dueCount = dueCards?.length ?? 0
 
   const [cardFormOpen, setCardFormOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CardRecord | null>(null)
@@ -39,11 +28,11 @@ export default function DeckDetailPage() {
   const [editDeckOpen, setEditDeckOpen] = useState(false)
   const [deleteDeckOpen, setDeleteDeckOpen] = useState(false)
 
-  if (deck === undefined || cards === undefined || dueCount === undefined) {
+  if (deckLoading || cardsLoading || dueLoading) {
     return <div className="text-center py-12 text-gray-500">Loading...</div>
   }
 
-  if (deck === null) {
+  if (deck === null || deck === undefined) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">Deck not found.</p>
@@ -53,6 +42,8 @@ export default function DeckDetailPage() {
       </div>
     )
   }
+
+  const cardList = cards ?? []
 
   return (
     <div>
@@ -72,7 +63,7 @@ export default function DeckDetailPage() {
             <p className="text-gray-500 mt-1">{deck.description}</p>
           )}
           <div className="flex gap-4 mt-2 text-sm text-gray-500">
-            <span>{cards.length} {cards.length === 1 ? 'card' : 'cards'}</span>
+            <span>{cardList.length} {cardList.length === 1 ? 'card' : 'cards'}</span>
             {dueCount > 0 && (
               <span className="text-amber-600 font-medium">
                 {dueCount} due
@@ -117,7 +108,7 @@ export default function DeckDetailPage() {
         </button>
       </div>
 
-      {cards.length === 0 ? (
+      {cardList.length === 0 ? (
         <EmptyState
           message="No cards in this deck yet."
           action={{
@@ -130,7 +121,7 @@ export default function DeckDetailPage() {
         />
       ) : (
         <CardList
-          cards={cards}
+          cards={cardList}
           onEdit={(card) => {
             setEditingCard(card)
             setCardFormOpen(true)
@@ -148,7 +139,7 @@ export default function DeckDetailPage() {
         card={editingCard}
         onSubmit={async (front, back) => {
           if (editingCard) {
-            await updateCard(editingCard.id, { front, back })
+            await updateCard(editingCard.id, { front, back }, deckId)
           } else {
             await addCard(deckId, front, back)
           }
@@ -159,7 +150,7 @@ export default function DeckDetailPage() {
         open={!!deletingCard}
         onClose={() => setDeletingCard(null)}
         onConfirm={async () => {
-          if (deletingCard) await deleteCard(deletingCard.id)
+          if (deletingCard) await deleteCard(deletingCard.id, deckId)
         }}
         title="Delete Card"
         message="Delete this card and its review history? This cannot be undone."

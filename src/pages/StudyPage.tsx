@@ -6,14 +6,14 @@ import StudySession from '../components/study/StudySession'
 export default function StudyPage() {
   const { id } = useParams()
   const deckId = Number(id)
-  const deck = useDeck(deckId)
+  const { data: deck, isLoading: deckLoading } = useDeck(deckId)
   const session = useStudySession(deckId)
 
-  if (deck === undefined || session.phase === 'loading') {
+  if (deckLoading || session.phase === 'loading') {
     return <div className="text-center py-12 text-gray-500">Loading...</div>
   }
 
-  if (deck === null) {
+  if (deck === null || deck === undefined) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">Deck not found.</p>

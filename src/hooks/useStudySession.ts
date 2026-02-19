@@ -1,10 +1,8 @@
 import { useReducer, useEffect, useCallback } from 'react'
-import Dexie from 'dexie'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { Rating, type Grade } from 'ts-fsrs'
-import { db } from '../db/db'
 import type { CardRecord } from '../models/types'
 import { processReview } from '../services/reviewService'
+import { useDueCards } from './useDueCards'
 
 type SessionPhase = 'loading' | 'studying' | 'flipped' | 'complete' | 'empty'
 
@@ -111,15 +109,7 @@ const initialState: SessionState = {
 export function useStudySession(deckId: number) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  // Fetch due cards
-  const dueCards = useLiveQuery(
-    () =>
-      db.cards
-        .where('[deckId+due]')
-        .between([deckId, Dexie.minKey], [deckId, new Date()])
-        .toArray(),
-    [deckId],
-  )
+  const { data: dueCards } = useDueCards(deckId)
 
   // Initialize session when dueCards arrive (only once)
   useEffect(() => {
@@ -144,7 +134,7 @@ export function useStudySession(deckId: number) {
       if (state.phase !== 'flipped' || !currentCard) return
       try {
         const updated = await processReview(currentCard, rating)
-        dispatch({ type: 'RATED', rating, updatedCard: updated as CardRecord })
+        dispatch({ type: 'RATED', rating, updatedCard: updated })
       } catch (err) {
         dispatch({
           type: 'ERROR',

@@ -1,6 +1,9 @@
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { useQuery } from '@tanstack/react-query'
+import { getDeck } from '../services/deckService'
 
 export function useDeck(id: number) {
-  return useLiveQuery(() => db.decks.get(id), [id])
+  return useQuery({
+    queryKey: ['deck', id],
+    queryFn: () => getDeck(id),
+  })
 }

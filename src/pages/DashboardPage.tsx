@@ -1,7 +1,5 @@
-import { useState } from 'react'
-import { useDecks } from '../hooks/useDecks'
-import { useDueCounts } from '../hooks/useDueCounts'
-import { useCardCounts } from '../hooks/useCardCounts'
+import { useState, useMemo } from 'react'
+import { useDashboard } from '../hooks/useDashboard'
 import { createDeck, updateDeck, deleteDeck } from '../services/deckService'
 import DeckList from '../components/deck/DeckList'
 import DeckFormModal from '../components/deck/DeckFormModal'
@@ -9,15 +7,24 @@ import ConfirmDialog from '../components/ui/ConfirmDialog'
 import type { Deck } from '../models/types'
 
 export default function DashboardPage() {
-  const decks = useDecks()
-  const dueCounts = useDueCounts()
-  const cardCounts = useCardCounts()
+  const { data: dashboardDecks, isLoading } = useDashboard()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null)
   const [deletingDeck, setDeletingDeck] = useState<Deck | null>(null)
 
-  if (decks === undefined || dueCounts === undefined || cardCounts === undefined) {
+  const { decks, cardCounts, dueCounts } = useMemo(() => {
+    if (!dashboardDecks) return { decks: [], cardCounts: {}, dueCounts: {} }
+    const cardCounts: Record<number, number> = {}
+    const dueCounts: Record<number, number> = {}
+    for (const d of dashboardDecks) {
+      cardCounts[d.id] = d.cardCount
+      dueCounts[d.id] = d.dueCount
+    }
+    return { decks: dashboardDecks, cardCounts, dueCounts }
+  }, [dashboardDecks])
+
+  if (isLoading) {
     return <div className="text-center py-12 text-gray-500">Loading...</div>
   }
 

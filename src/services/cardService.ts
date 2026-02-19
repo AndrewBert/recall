@@ -1,31 +1,38 @@
-import Dexie from 'dexie'
-import { db } from '../db/db'
+import { apiFetch, remapCardToApi } from './api'
+import { queryClient } from '../queryClient'
 import { createNewCardRecord } from './fsrs'
 
 export async function addCard(deckId: number, front: string, back: string) {
   const record = createNewCardRecord(deckId, front, back)
-  return db.cards.add(record as any)
+  const payload = remapCardToApi(record)
+
+  await apiFetch('/api/cards', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'cards'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'due-cards'] })
 }
 
 export async function updateCard(
   id: number,
   updates: { front?: string; back?: string },
+  deckId: number,
 ) {
-  return db.cards.update(id, updates)
-}
-
-export async function deleteCard(id: number) {
-  await db.transaction('rw', [db.cards, db.reviewLogs], async () => {
-    await db.reviewLogs.where('cardId').equals(id).delete()
-    await db.cards.delete(id)
+  await apiFetch(`/api/cards/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
   })
+
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'cards'] })
 }
 
-/** Get all cards due for review in a deck using compound index [deckId+due]. */
-export async function getDueCards(deckId: number) {
-  const now = new Date()
-  return db.cards
-    .where('[deckId+due]')
-    .between([deckId, Dexie.minKey], [deckId, now])
-    .toArray()
+export async function deleteCard(id: number, deckId: number) {
+  await apiFetch(`/api/cards/${id}`, { method: 'DELETE' })
+
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'cards'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'due-cards'] })
 }

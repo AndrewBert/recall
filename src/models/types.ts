@@ -8,6 +8,11 @@ export interface Deck {
   updatedAt: Date
 }
 
+export interface DashboardDeck extends Deck {
+  cardCount: number
+  dueCount: number
+}
+
 export interface CardRecord {
   id: number
   deckId: number
