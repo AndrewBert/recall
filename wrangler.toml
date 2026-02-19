@@ -1,0 +1,10 @@
+name = "flash-cards"
+compatibility_date = "2025-01-01"
+# pages_build_output_dir is set in Cloudflare dashboard for auto-deploy
+# Omitted here so `wrangler pages dev -- vite` can proxy to Vite dev server
+
+[[d1_databases]]
+binding = "DB"
+database_name = "flash-cards-db"
+database_id = "placeholder-will-be-replaced"
+migrations_dir = "migrations"
