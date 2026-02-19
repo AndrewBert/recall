@@ -33,6 +33,7 @@ src/
   components/         — UI organized by domain (deck/, card/, study/, ui/)
   lib/utils.ts        — Date formatting helpers
 functions/api/        — Cloudflare Pages Functions (D1 backend)
+components/migration/ — One-time IndexedDB→D1 migration banner
 ```
 
 **Routes:** `/` → Dashboard, `/deck/:id` → DeckDetail, `/deck/:id/study` → StudyPage. All nested under `<Layout>` with shared header.
@@ -68,6 +69,18 @@ Frontend fetches from REST API via `apiFetch()` (Bearer token auth from `VITE_AP
 | `updateCard(id, _, deckId)` | `['deck', deckId, 'cards']` |
 | `deleteCard(id, deckId)` | `['dashboard']`, `['deck', deckId, 'cards']`, `['deck', deckId, 'due-cards']` |
 | `processReview(card)` | `['dashboard']`, `['deck', deckId, 'cards']`, `['deck', deckId, 'due-cards']` |
+
+### IndexedDB → D1 Migration
+
+One-time migration for users who had data in the old Dexie-based IndexedDB (`FlashCardsDB`). Lives in `src/services/migrationService.ts` + `src/components/migration/MigrationBanner.tsx`.
+
+- **No Dexie dependency** — reads via raw `window.indexedDB` API (with Firefox fallback for `indexedDB.databases()`)
+- **User-initiated** — banner on Dashboard detects legacy data; user clicks to migrate
+- **ID remapping** — old auto-increment IDs → new D1 IDs via `Map<oldDeckId, newDeckId>`
+- **Resume on retry** — deck map persisted to `localStorage` so partial failures can resume without duplicating decks
+- **Cleanup** — on success, deletes IndexedDB and invalidates all TanStack Query caches
+- **Skippable** — dismiss stores `migration-dismissed` in `localStorage`
+- **Scope** — decks + cards only (review logs skipped; no API endpoint)
 
 ## Design Philosophy — Mobile First
 
