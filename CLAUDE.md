@@ -15,34 +15,35 @@ No test framework is configured yet.
 
 - **Vite + React 19 + TypeScript** (strict mode, no unused locals/params)
 - **Tailwind CSS v4** via `@tailwindcss/vite` — no `tailwind.config.js` or `postcss.config.js` needed; styles use `@import "tailwindcss"` in `index.css`
-- **Dexie.js** (IndexedDB) + `dexie-react-hooks` for reactive queries
-- **ts-fsrs v5** for spaced repetition scheduling
+- **TanStack React Query** for server state management
+- **ts-fsrs v5** for spaced repetition scheduling (runs client-side)
 - **React Router v7** — import from `"react-router"`, NOT `"react-router-dom"`
+- **Cloudflare D1** backend with REST API (`functions/api/`)
 
 ## Architecture
 
 ```
 src/
-  db/db.ts          — Dexie schema: decks, cards, reviewLogs
-  models/types.ts   — TypeScript interfaces (Deck, CardRecord, ReviewLogRecord)
-  services/         — Async data operations (deckService, cardService, reviewService, fsrs)
-  hooks/            — useLiveQuery wrappers + useStudySession state machine
-  pages/            — Route-level components (Dashboard, DeckDetail, Study)
-  components/       — UI organized by domain (deck/, card/, study/, ui/)
-  lib/utils.ts      — Date formatting helpers
+  services/api.ts     — apiFetch wrapper, date parsing, CardRecord↔API field remapping
+  services/           — deckService, cardService, reviewService (call API + invalidate cache), fsrs (pure FSRS logic)
+  queryClient.ts      — Shared TanStack QueryClient instance (staleTime: 60s, retry: 1)
+  models/types.ts     — TypeScript interfaces (Deck, DashboardDeck, CardRecord, ReviewLogRecord)
+  hooks/              — useQuery-based hooks (useDashboard, useDeck, useDeckCards, useDueCards, useStudySession)
+  pages/              — Route-level components (Dashboard, DeckDetail, Study)
+  components/         — UI organized by domain (deck/, card/, study/, ui/)
+  lib/utils.ts        — Date formatting helpers
+functions/api/        — Cloudflare Pages Functions (D1 backend)
 ```
 
 **Routes:** `/` → Dashboard, `/deck/:id` → DeckDetail, `/deck/:id/study` → StudyPage. All nested under `<Layout>` with shared header.
 
-### Database
+### Data Layer
 
-Three Dexie tables with compound indexes for efficient queries:
+Frontend fetches from REST API via `apiFetch()` (Bearer token auth from `VITE_API_KEY`). TanStack Query manages caching; services invalidate relevant query keys after mutations.
 
-- `cards: '++id, deckId, due, state, [deckId+due]'`
-- `reviewLogs: '++id, cardId, review, [cardId+review]'`
-- `decks: '++id, name, createdAt'`
+**Field mapping**: Only `last_review` ↔ `lastReview` needs renaming between `CardRecord` and the API. All other fields (including `elapsed_days`, `scheduled_days`, `learning_steps`) pass through as-is. Date fields (`due`, `last_review`, `createdAt`, `updatedAt`) are ISO strings in the API, parsed to `Date` objects by `remapCardFromApi()`.
 
-FSRS fields are stored **flat** on `CardRecord` (not nested) to enable Dexie indexing. Cascade deletes handled via Dexie transactions in `deckService.ts`.
+**D1 schema**: `migrations/0001_initial.sql` — `decks`, `cards`, `review_logs` tables. DB uses snake_case columns; API responses use camelCase. Cascade deletes done manually via `DB.batch()` (D1 doesn't persist `PRAGMA foreign_keys`).
 
 ### FSRS Integration
 
@@ -56,9 +57,17 @@ FSRS fields are stored **flat** on `CardRecord` (not nested) to enable Dexie ind
 
 `useStudySession` is a `useReducer` state machine with phases: `loading → studying → flipped → complete | empty`. Again-rated cards are re-queued at end of queue, max once per session (tracked via `Set`). Keyboard shortcuts: Space/Enter to flip, 1-4 to rate.
 
-### Dexie Hooks
+### Cache Invalidation
 
-`useLiveQuery()` returns `undefined` on first render — always handle loading state before accessing data. Dashboard uses a single query for due counts across all decks to avoid N+1.
+| Mutation | Invalidates |
+|---|---|
+| `createDeck` | `['dashboard']` |
+| `updateDeck(id)` | `['dashboard']`, `['deck', id]` |
+| `deleteDeck(id)` | `['dashboard']`, remove `['deck', id]` |
+| `addCard(deckId)` | `['dashboard']`, `['deck', deckId, 'cards']`, `['deck', deckId, 'due-cards']` |
+| `updateCard(id, _, deckId)` | `['deck', deckId, 'cards']` |
+| `deleteCard(id, deckId)` | `['dashboard']`, `['deck', deckId, 'cards']`, `['deck', deckId, 'due-cards']` |
+| `processReview(card)` | `['dashboard']`, `['deck', deckId, 'cards']`, `['deck', deckId, 'due-cards']` |
 
 ## Design Philosophy — Mobile First
 
