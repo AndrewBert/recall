@@ -25,7 +25,7 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="rounded-lg p-0 backdrop:bg-black/50 max-w-lg w-full"
+      className="rounded-lg p-0 backdrop:bg-black/50 max-w-lg w-full m-auto"
     >
       <div className="p-6">
         <div className="flex items-center justify-between mb-4">

@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { useNavigate, Link } from 'react-router'
 import type { Deck } from '../../models/types'
 
 interface DeckCardProps {
@@ -16,16 +16,18 @@ export default function DeckCard({
   onEdit,
   onDelete,
 }: DeckCardProps) {
+  const navigate = useNavigate()
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
+    <div
+      onClick={() => navigate(`/deck/${deck.id}`)}
+      className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer"
+    >
       <div className="flex items-start justify-between mb-3">
-        <Link
-          to={`/deck/${deck.id}`}
-          className="text-lg font-semibold text-gray-900 hover:text-indigo-600 no-underline transition-colors"
-        >
+        <span className="text-lg font-semibold text-gray-900">
           {deck.name}
-        </Link>
-        <div className="flex gap-1">
+        </span>
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => onEdit(deck)}
             className="text-gray-400 hover:text-gray-600 px-1.5 cursor-pointer"
@@ -51,7 +53,7 @@ export default function DeckCard({
         <span className="text-sm text-gray-500">
           {cardCount} {cardCount === 1 ? 'card' : 'cards'}
         </span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           {dueCount > 0 && (
             <span className="text-sm font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
               {dueCount} due
