@@ -17,7 +17,7 @@ export default function StudyPage() {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">Deck not found.</p>
-        <Link to="/" className="text-indigo-600 hover:text-indigo-800">
+        <Link to="/" className="text-indigo-600 hover:text-indigo-800 active:text-indigo-800">
           Back to decks
         </Link>
       </div>
@@ -35,7 +35,7 @@ export default function StudyPage() {
         </p>
         <Link
           to={`/deck/${deck.id}`}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 no-underline transition-colors"
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 no-underline transition-colors"
         >
           Back to Deck
         </Link>
@@ -48,7 +48,7 @@ export default function StudyPage() {
       <div className="mb-6">
         <Link
           to={`/deck/${deck.id}`}
-          className="text-sm text-gray-500 hover:text-gray-700 no-underline"
+          className="text-sm text-gray-500 hover:text-gray-700 active:text-gray-700 no-underline"
         >
           &larr; {deck.name}
         </Link>

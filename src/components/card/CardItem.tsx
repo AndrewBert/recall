@@ -33,14 +33,14 @@ export default function CardItem({ card, onEdit, onDelete }: CardItemProps) {
       <div className="flex gap-1 shrink-0">
         <button
           onClick={() => onEdit(card)}
-          className="text-gray-400 hover:text-gray-600 px-1.5 text-sm cursor-pointer"
+          className="text-gray-400 hover:text-gray-600 active:bg-gray-100 p-2.5 rounded-md cursor-pointer"
           title="Edit"
         >
           &#9998;
         </button>
         <button
           onClick={() => onDelete(card)}
-          className="text-gray-400 hover:text-red-500 px-1.5 text-sm cursor-pointer"
+          className="text-gray-400 hover:text-red-500 active:bg-red-50 p-2.5 rounded-md cursor-pointer"
           title="Delete"
         >
           &#10005;

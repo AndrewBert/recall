@@ -13,8 +13,7 @@ export default function FlashCard({
 }: FlashCardProps) {
   return (
     <div
-      className="flip-card w-full max-w-xl mx-auto cursor-pointer"
-      style={{ height: '280px' }}
+      className="flip-card w-full max-w-xl mx-auto cursor-pointer h-60 sm:h-[280px] active:scale-[0.98] transition-transform"
       onClick={onFlip}
     >
       <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
@@ -27,7 +26,8 @@ export default function FlashCard({
           </p>
           {!isFlipped && (
             <p className="text-xs text-gray-400 mt-6">
-              Click or press Space to reveal
+              <span className="sm:hidden">Tap to reveal</span>
+              <span className="hidden sm:inline">Click or press Space to reveal</span>
             </p>
           )}
         </div>

@@ -10,7 +10,7 @@ export default function Header() {
         <nav className="flex gap-4">
           <Link
             to="/"
-            className="text-gray-600 hover:text-indigo-600 no-underline transition-colors"
+            className="text-gray-600 hover:text-indigo-600 active:text-indigo-600 no-underline transition-colors py-2"
           >
             Decks
           </Link>

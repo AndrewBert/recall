@@ -26,7 +26,7 @@ export default function StudyComplete({
         You reviewed {totalCards} {totalCards === 1 ? 'card' : 'cards'}
       </p>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 gap-3 mb-8 sm:grid-cols-4">
         <div className="bg-red-50 rounded-lg p-3">
           <div className="text-lg font-bold text-red-600">{stats.again}</div>
           <div className="text-xs text-red-500">Again</div>
@@ -45,16 +45,16 @@ export default function StudyComplete({
         </div>
       </div>
 
-      <div className="flex justify-center gap-3">
+      <div className="flex flex-col sm:flex-row justify-center gap-3">
         <Link
           to={`/deck/${deckId}`}
-          className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 no-underline transition-colors"
+          className="w-full sm:w-auto text-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 no-underline transition-colors"
         >
           Back to Deck
         </Link>
         <Link
           to="/"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 no-underline transition-colors"
+          className="w-full sm:w-auto text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 no-underline transition-colors"
         >
           Dashboard
         </Link>

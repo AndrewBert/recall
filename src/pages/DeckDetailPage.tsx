@@ -47,7 +47,7 @@ export default function DeckDetailPage() {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">Deck not found.</p>
-        <Link to="/" className="text-indigo-600 hover:text-indigo-800">
+        <Link to="/" className="text-indigo-600 hover:text-indigo-800 active:text-indigo-800">
           Back to decks
         </Link>
       </div>
@@ -59,13 +59,13 @@ export default function DeckDetailPage() {
       <div className="mb-6">
         <Link
           to="/"
-          className="text-sm text-gray-500 hover:text-gray-700 no-underline"
+          className="text-sm text-gray-500 hover:text-gray-700 active:text-gray-700 no-underline"
         >
           &larr; All Decks
         </Link>
       </div>
 
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{deck.name}</h1>
           {deck.description && (
@@ -80,23 +80,23 @@ export default function DeckDetailPage() {
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setEditDeckOpen(true)}
-            className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+            className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
           >
             Edit Deck
           </button>
           <button
             onClick={() => setDeleteDeckOpen(true)}
-            className="px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer"
+            className="px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 active:bg-red-100 transition-colors cursor-pointer"
           >
             Delete
           </button>
           {dueCount > 0 && (
             <Link
               to={`/deck/${deck.id}/study`}
-              className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors no-underline"
+              className="w-full sm:w-auto text-center px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors no-underline"
             >
               Study ({dueCount})
             </Link>
@@ -111,7 +111,7 @@ export default function DeckDetailPage() {
             setEditingCard(null)
             setCardFormOpen(true)
           }}
-          className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
+          className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors cursor-pointer"
         >
           + Add Card
         </button>
