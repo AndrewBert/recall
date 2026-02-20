@@ -18,12 +18,12 @@ export default function CardItem({ card, onEdit, onDelete }: CardItemProps) {
   const stateInfo = stateLabels[card.state] ?? stateLabels[State.New]
 
   return (
-    <div className="flex items-center gap-4 py-3 px-4 bg-white rounded-lg border border-gray-200">
+    <div className="flex items-center gap-4 py-3 px-4 bg-surface rounded-lg border border-border">
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">
+        <p className="text-sm font-medium text-body truncate">
           {card.front}
         </p>
-        <p className="text-sm text-gray-500 truncate">{card.back}</p>
+        <p className="text-sm text-secondary truncate">{card.back}</p>
       </div>
       <span
         className={`text-xs font-medium px-2 py-0.5 rounded ${stateInfo.className}`}
@@ -33,14 +33,14 @@ export default function CardItem({ card, onEdit, onDelete }: CardItemProps) {
       <div className="flex gap-1 shrink-0">
         <button
           onClick={() => onEdit(card)}
-          className="text-gray-400 hover:text-gray-600 active:bg-gray-100 p-2.5 rounded-md cursor-pointer"
+          className="text-tertiary hover:text-secondary active:bg-surface-hover p-2.5 rounded-md cursor-pointer"
           title="Edit"
         >
           &#9998;
         </button>
         <button
           onClick={() => onDelete(card)}
-          className="text-gray-400 hover:text-red-500 active:bg-red-50 p-2.5 rounded-md cursor-pointer"
+          className="text-tertiary hover:text-red-500 active:bg-red-50 p-2.5 rounded-md cursor-pointer"
           title="Delete"
         >
           &#10005;

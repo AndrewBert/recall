@@ -11,6 +11,7 @@ import BulkImportModal from '../components/card/BulkImportModal'
 import DeckFormModal from '../components/deck/DeckFormModal'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import EmptyState from '../components/ui/EmptyState'
+import { useDeckTheme } from '../hooks/useDeckTheme'
 import type { CardRecord } from '../models/types'
 
 export default function DeckDetailPage() {
@@ -20,6 +21,7 @@ export default function DeckDetailPage() {
   const { data: deck, isLoading: deckLoading } = useDeck(deckId)
   const { data: cards, isLoading: cardsLoading } = useDeckCards(deckId)
   const { data: dueCards, isLoading: dueLoading } = useDueCards(deckId)
+  const { isGenerating } = useDeckTheme(deck?.name)
 
   const dueCount = dueCards?.length ?? 0
 
@@ -31,14 +33,14 @@ export default function DeckDetailPage() {
   const [deleteDeckOpen, setDeleteDeckOpen] = useState(false)
 
   if (deckLoading || cardsLoading || dueLoading) {
-    return <div className="text-center py-12 text-gray-500">Loading...</div>
+    return <div className="text-center py-12 text-secondary">Loading...</div>
   }
 
   if (deck === null || deck === undefined) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 mb-4">Deck not found.</p>
-        <Link to="/" className="text-indigo-600 hover:text-indigo-800 active:text-indigo-800">
+        <p className="text-secondary mb-4">Deck not found.</p>
+        <Link to="/" className="text-primary hover:text-primary-hover active:text-primary-hover">
           Back to decks
         </Link>
       </div>
@@ -49,22 +51,25 @@ export default function DeckDetailPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-6 flex items-center gap-3">
         <Link
           to="/"
-          className="text-sm text-gray-500 hover:text-gray-700 active:text-gray-700 no-underline"
+          className="text-sm text-secondary hover:text-body active:text-body no-underline"
         >
           &larr; All Decks
         </Link>
+        {isGenerating && (
+          <span className="text-xs text-tertiary animate-pulse">Generating theme...</span>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{deck.name}</h1>
+          <h1 className="text-2xl font-bold text-body">{deck.name}</h1>
           {deck.description && (
-            <p className="text-gray-500 mt-1">{deck.description}</p>
+            <p className="text-secondary mt-1">{deck.description}</p>
           )}
-          <div className="flex gap-4 mt-2 text-sm text-gray-500">
+          <div className="flex gap-4 mt-2 text-sm text-secondary">
             <span>{cardList.length} {cardList.length === 1 ? 'card' : 'cards'}</span>
             {dueCount > 0 && (
               <span className="text-amber-600 font-medium">
@@ -76,7 +81,7 @@ export default function DeckDetailPage() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setEditDeckOpen(true)}
-            className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+            className="px-3 py-2 text-sm text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active transition-colors cursor-pointer"
           >
             Edit Deck
           </button>
@@ -89,7 +94,7 @@ export default function DeckDetailPage() {
           {dueCount > 0 && (
             <Link
               to={`/deck/${deck.id}/study`}
-              className="w-full sm:w-auto text-center px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors no-underline"
+              className="w-full sm:w-auto text-center px-4 py-2 text-sm bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover transition-colors no-underline"
             >
               Study ({dueCount})
             </Link>
@@ -98,11 +103,11 @@ export default function DeckDetailPage() {
       </div>
 
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Cards</h2>
+        <h2 className="text-lg font-semibold text-body">Cards</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setBulkImportOpen(true)}
-            className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+            className="px-3 py-2 text-sm text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active transition-colors cursor-pointer"
           >
             Import
           </button>
@@ -111,7 +116,7 @@ export default function DeckDetailPage() {
               setEditingCard(null)
               setCardFormOpen(true)
             }}
-            className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors cursor-pointer"
+            className="px-3 py-2 text-sm bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover transition-colors cursor-pointer"
           >
             + Add Card
           </button>

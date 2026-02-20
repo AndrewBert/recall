@@ -15,25 +15,25 @@ export default function StatsPage() {
   const { data: stats, isLoading } = useStats()
 
   if (isLoading) {
-    return <div className="text-center py-12 text-gray-500">Loading...</div>
+    return <div className="text-center py-12 text-secondary">Loading...</div>
   }
 
   if (!stats) {
-    return <div className="text-center py-12 text-gray-500">Failed to load stats.</div>
+    return <div className="text-center py-12 text-secondary">Failed to load stats.</div>
   }
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
-      <h1 className="text-2xl font-bold text-gray-900">Statistics</h1>
+      <h1 className="text-2xl font-bold text-body">Statistics</h1>
 
       {/* Today */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Today</h2>
+        <h2 className="text-lg font-semibold text-secondary mb-3">Today</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           <StatCard
             value={stats.today.reviewsCompleted}
             label="Reviews"
-            colorClass="bg-indigo-50 text-indigo-600 text-indigo-500"
+            colorClass="bg-primary/10 text-primary text-primary/70"
           />
           <StatCard
             value={stats.today.again}
@@ -60,12 +60,12 @@ export default function StatsPage() {
 
       {/* Overview */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Overview</h2>
+        <h2 className="text-lg font-semibold text-secondary mb-3">Overview</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <StatCard
             value={stats.overview.totalCards}
             label="Total Cards"
-            colorClass="bg-gray-50 text-gray-700 text-gray-500"
+            colorClass="bg-page text-secondary text-tertiary"
           />
           <StatCard
             value={stats.overview.newCards}
@@ -85,7 +85,7 @@ export default function StatsPage() {
           <StatCard
             value={stats.overview.totalReviews}
             label="Total Reviews"
-            colorClass="bg-gray-50 text-gray-700 text-gray-500"
+            colorClass="bg-page text-secondary text-tertiary"
           />
           <StatCard
             value={stats.overview.streak > 0 ? `${stats.overview.streak}d` : '0'}
@@ -97,7 +97,7 @@ export default function StatsPage() {
 
       {/* Retention */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Retention</h2>
+        <h2 className="text-lg font-semibold text-secondary mb-3">Retention</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <StatCard
             value={stats.retention.trueRetention != null ? `${stats.retention.trueRetention}%` : '--'}
@@ -119,7 +119,7 @@ export default function StatsPage() {
 
       {/* Upcoming */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Upcoming</h2>
+        <h2 className="text-lg font-semibold text-secondary mb-3">Upcoming</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <StatCard
             value={stats.upcoming.dueToday}

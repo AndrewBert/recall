@@ -54,7 +54,7 @@ export default function CardFormModal({
         <div className="mb-4">
           <label
             htmlFor="card-front"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-secondary mb-1"
           >
             Front
           </label>
@@ -64,14 +64,14 @@ export default function CardFormModal({
             onChange={(e) => setFront(e.target.value)}
             placeholder="Question or term"
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
             autoFocus
           />
         </div>
         <div className="mb-6">
           <label
             htmlFor="card-back"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-secondary mb-1"
           >
             Back
           </label>
@@ -81,21 +81,21 @@ export default function CardFormModal({
             onChange={(e) => setBack(e.target.value)}
             placeholder="Answer or definition"
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none"
           />
         </div>
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active transition-colors cursor-pointer"
           >
             {isEdit ? 'Cancel' : 'Done'}
           </button>
           <button
             type="submit"
             disabled={!front.trim() || !back.trim()}
-            className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             {isEdit ? 'Save' : 'Add'}
           </button>
