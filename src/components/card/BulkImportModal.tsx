@@ -119,7 +119,7 @@ export default function BulkImportModal({
         <div>
           <label
             htmlFor="bulk-text"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-secondary mb-1"
           >
             Paste your cards (one per line, front{DELIMITER_LABELS[delimiter].toLowerCase()}{' '}separated from back)
           </label>
@@ -129,13 +129,13 @@ export default function BulkImportModal({
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder={`front${DELIMITER_CHARS[delimiter]}back\nWhat is 2+2?${DELIMITER_CHARS[delimiter]}4\nCapital of France?${DELIMITER_CHARS[delimiter]}Paris`}
             rows={8}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y font-mono text-sm"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-y font-mono text-sm"
             autoFocus
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Delimiter:</span>
+          <span className="text-sm text-secondary">Delimiter:</span>
           {(Object.keys(DELIMITER_CHARS) as Delimiter[]).map((d) => (
             <button
               key={d}
@@ -143,8 +143,8 @@ export default function BulkImportModal({
               onClick={() => handleDelimiterChange(d)}
               className={`px-2.5 py-1.5 text-xs rounded-md cursor-pointer transition-colors ${
                 delimiter === d
-                  ? 'bg-indigo-100 text-indigo-700 font-medium'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-200'
+                  ? 'bg-primary/20 text-primary font-medium'
+                  : 'bg-surface-hover text-secondary hover:bg-surface-active active:bg-surface-active'
               }`}
             >
               {DELIMITER_LABELS[d]}
@@ -154,24 +154,24 @@ export default function BulkImportModal({
 
         {valid.length > 0 && (
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">
+            <p className="text-sm font-medium text-secondary mb-2">
               Preview ({valid.length} {valid.length === 1 ? 'card' : 'cards'})
             </p>
-            <div className="border border-gray-200 rounded-lg overflow-hidden max-h-48 overflow-y-auto">
+            <div className="border border-border rounded-lg overflow-hidden max-h-48 overflow-y-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 sticky top-0">
+                <thead className="bg-page sticky top-0">
                   <tr>
-                    <th className="text-left px-3 py-2 text-gray-600 font-medium">Front</th>
-                    <th className="text-left px-3 py-2 text-gray-600 font-medium">Back</th>
+                    <th className="text-left px-3 py-2 text-secondary font-medium">Front</th>
+                    <th className="text-left px-3 py-2 text-secondary font-medium">Back</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-surface-hover">
                   {valid.map((card, i) => (
                     <tr key={i}>
-                      <td className="px-3 py-1.5 text-gray-900 truncate max-w-[200px]">
+                      <td className="px-3 py-1.5 text-body truncate max-w-[200px]">
                         {card.front}
                       </td>
-                      <td className="px-3 py-1.5 text-gray-900 truncate max-w-[200px]">
+                      <td className="px-3 py-1.5 text-body truncate max-w-[200px]">
                         {card.back}
                       </td>
                     </tr>
@@ -202,7 +202,7 @@ export default function BulkImportModal({
           <button
             type="button"
             onClick={handleClose}
-            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -210,7 +210,7 @@ export default function BulkImportModal({
             type="button"
             onClick={handleSubmit}
             disabled={valid.length === 0 || valid.length > MAX_CARDS || submitting}
-            className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             {submitting
               ? 'Importing...'

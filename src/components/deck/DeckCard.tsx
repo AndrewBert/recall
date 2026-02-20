@@ -27,23 +27,23 @@ export default function DeckCard({
   return (
     <div
       onClick={() => navigate(`/deck/${deck.id}`)}
-      className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 hover:shadow-md active:shadow-md transition-shadow cursor-pointer"
+      className="bg-surface rounded-lg border border-border p-4 sm:p-5 hover:shadow-md active:shadow-md transition-shadow cursor-pointer"
     >
       <div className="flex items-start justify-between mb-3">
-        <span className="text-lg font-semibold text-gray-900">
+        <span className="text-lg font-semibold text-body">
           {deck.name}
         </span>
         <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => onEdit(deck)}
-            className="text-gray-400 hover:text-gray-600 active:bg-gray-100 p-2.5 rounded-md cursor-pointer"
+            className="text-tertiary hover:text-secondary active:bg-surface-hover p-2.5 rounded-md cursor-pointer"
             title="Edit"
           >
             &#9998;
           </button>
           <button
             onClick={() => onDelete(deck)}
-            className="text-gray-400 hover:text-red-500 active:bg-red-50 p-2.5 rounded-md cursor-pointer"
+            className="text-tertiary hover:text-red-500 active:bg-red-50 p-2.5 rounded-md cursor-pointer"
             title="Delete"
           >
             &#10005;
@@ -51,13 +51,13 @@ export default function DeckCard({
         </div>
       </div>
       {deck.description && (
-        <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+        <p className="text-sm text-secondary mb-3 line-clamp-2">
           {deck.description}
         </p>
       )}
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-secondary">
             {cardCount} {cardCount === 1 ? 'card' : 'cards'}
           </span>
           {dueCount > 0 && (
@@ -84,7 +84,7 @@ export default function DeckCard({
           {dueCount > 0 && (
             <Link
               to={`/deck/${deck.id}/study`}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800 active:text-indigo-800 no-underline transition-colors px-3 py-2.5 rounded"
+              className="text-sm font-medium text-primary hover:text-primary-hover active:text-primary-hover no-underline transition-colors px-3 py-2.5 rounded"
             >
               Study
             </Link>

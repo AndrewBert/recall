@@ -25,8 +25,8 @@ export default function StudyComplete({
   return (
     <div className="text-center py-12 max-w-md mx-auto">
       <div className="text-4xl mb-4">&#10003;</div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Session Complete</h2>
-      <p className="text-gray-500 mb-6">
+      <h2 className="text-2xl font-bold text-body mb-2">Session Complete</h2>
+      <p className="text-secondary mb-6">
         You reviewed {totalCards} {totalCards === 1 ? 'card' : 'cards'}
       </p>
 
@@ -53,7 +53,7 @@ export default function StudyComplete({
         <div className="mb-6">
           <button
             onClick={onUndo}
-            className="text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+            className="text-sm text-secondary border border-border rounded-lg px-4 py-2 hover:bg-page active:bg-surface-hover transition-colors cursor-pointer"
           >
             &#8617; Undo last rating <span className="hidden sm:inline">(Z)</span>
           </button>
@@ -63,13 +63,13 @@ export default function StudyComplete({
       <div className="flex flex-col sm:flex-row justify-center gap-3">
         <Link
           to={`/deck/${deckId}`}
-          className="w-full sm:w-auto text-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 no-underline transition-colors"
+          className="w-full sm:w-auto text-center px-4 py-2 text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active no-underline transition-colors"
         >
           Back to Deck
         </Link>
         <Link
           to="/"
-          className="w-full sm:w-auto text-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 no-underline transition-colors"
+          className="w-full sm:w-auto text-center px-4 py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover no-underline transition-colors"
         >
           Dashboard
         </Link>

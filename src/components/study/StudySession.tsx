@@ -92,15 +92,15 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
     <div>
       {/* Progress bar */}
       <div className="mb-6">
-        <div className="flex justify-between text-sm text-gray-500 mb-1">
+        <div className="flex justify-between text-sm text-secondary mb-1">
           <span>
             Card {currentIndex + 1} of {totalCards}
           </span>
           <span>{Math.round(progress)}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-surface-active rounded-full h-2">
           <div
-            className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+            className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -124,7 +124,7 @@ export default function StudySession({ session, deckId }: StudySessionProps) {
         <div className="text-center mt-4">
           <button
             onClick={undo}
-            className="text-sm text-gray-500 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+            className="text-sm text-secondary border border-border rounded-lg px-4 py-2 hover:bg-page active:bg-surface-hover transition-colors cursor-pointer"
           >
             &#8617; Undo last rating <span className="hidden sm:inline">(Z)</span>
           </button>

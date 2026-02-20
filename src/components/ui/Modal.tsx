@@ -35,10 +35,10 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
     >
       <div className="p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <h2 className="text-lg font-semibold text-body">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 active:text-gray-600 text-xl leading-none cursor-pointer p-2 -m-2 rounded"
+            className="text-tertiary hover:text-secondary active:text-secondary text-xl leading-none cursor-pointer p-2 -m-2 rounded"
           >
             &times;
           </button>

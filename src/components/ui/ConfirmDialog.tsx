@@ -19,11 +19,11 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Modal open={open} onClose={onClose} title={title}>
-      <p className="text-gray-600 mb-6">{message}</p>
+      <p className="text-secondary mb-6">{message}</p>
       <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
         <button
           onClick={onClose}
-          className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+          className="w-full sm:w-auto px-4 py-2 text-secondary bg-surface-hover rounded-lg hover:bg-surface-active active:bg-surface-active transition-colors cursor-pointer"
         >
           Cancel
         </button>

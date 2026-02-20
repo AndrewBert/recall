@@ -31,7 +31,7 @@ export default function DashboardPage() {
   }, [dashboardDecks])
 
   if (isLoading) {
-    return <div className="text-center py-12 text-gray-500">Loading...</div>
+    return <div className="text-center py-12 text-secondary">Loading...</div>
   }
 
   const totalDue = Object.values(dueCounts).reduce((a, b) => a + b, 0)
@@ -40,7 +40,7 @@ export default function DashboardPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Your Decks</h1>
+          <h1 className="text-2xl font-bold text-body">Your Decks</h1>
           {totalDue > 0 && (
             <p className="text-sm text-amber-600 mt-1">
               {totalDue} {totalDue === 1 ? 'card' : 'cards'} due for review
@@ -52,7 +52,7 @@ export default function DashboardPage() {
             setEditingDeck(null)
             setFormOpen(true)
           }}
-          className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors cursor-pointer"
+          className="w-full sm:w-auto px-4 py-2 bg-primary text-on-primary rounded-lg hover:bg-primary-hover active:bg-primary-hover transition-colors cursor-pointer"
         >
           + New Deck
         </button>
