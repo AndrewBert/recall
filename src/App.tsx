@@ -3,6 +3,7 @@ import Layout from './components/layout/Layout'
 import DashboardPage from './pages/DashboardPage'
 import DeckDetailPage from './pages/DeckDetailPage'
 import StudyPage from './pages/StudyPage'
+import StatsPage from './pages/StatsPage'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="deck/:id" element={<DeckDetailPage />} />
           <Route path="deck/:id/study" element={<StudyPage />} />
+          <Route path="stats" element={<StatsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

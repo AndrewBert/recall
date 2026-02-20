@@ -34,6 +34,13 @@ export interface CardRecord {
   last_review?: Date
 }
 
+export interface StatsResponse {
+  today: { reviewsCompleted: number; again: number; hard: number; good: number; easy: number }
+  overview: { totalCards: number; newCards: number; learningCards: number; reviewCards: number; totalReviews: number; streak: number }
+  retention: { trueRetention: number | null; avgStability: number | null; avgDifficulty: number | null }
+  upcoming: { dueToday: number; dueWeek: number; dueMonth: number }
+}
+
 export interface ReviewLogRecord {
   id: number
   cardId: number

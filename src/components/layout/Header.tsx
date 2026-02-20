@@ -14,6 +14,12 @@ export default function Header() {
           >
             Decks
           </Link>
+          <Link
+            to="/stats"
+            className="text-gray-600 hover:text-indigo-600 active:text-indigo-600 no-underline transition-colors py-2"
+          >
+            Stats
+          </Link>
         </nav>
       </div>
     </header>

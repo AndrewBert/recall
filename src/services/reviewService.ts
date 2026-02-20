@@ -56,6 +56,7 @@ export async function processReview(cardRecord: CardRecord, rating: Grade): Prom
   queryClient.invalidateQueries({ queryKey: ['dashboard'] })
   queryClient.invalidateQueries({ queryKey: ['deck', cardRecord.deckId, 'due-cards'] })
   queryClient.invalidateQueries({ queryKey: ['deck', cardRecord.deckId, 'cards'] })
+  queryClient.invalidateQueries({ queryKey: ['stats'] })
 
   return {
     card: remapCardFromApi(res.card),
@@ -92,4 +93,5 @@ export async function undoReview(
   queryClient.invalidateQueries({ queryKey: ['dashboard'] })
   queryClient.invalidateQueries({ queryKey: ['deck', previousCard.deckId, 'due-cards'] })
   queryClient.invalidateQueries({ queryKey: ['deck', previousCard.deckId, 'cards'] })
+  queryClient.invalidateQueries({ queryKey: ['stats'] })
 }
