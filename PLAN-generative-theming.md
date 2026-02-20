@@ -209,15 +209,43 @@ export function useDeckTheme(deckName: string | undefined) {
 
 ### 3. `functions/api/generate-theme.ts`
 
-**Purpose:** Cloudflare Pages Function that calls Claude API with tool_use for structured output.
+**Purpose:** Cloudflare Pages Function that calls Claude API with structured outputs for guaranteed-valid JSON.
 
 - Uses `fetch()` directly to call `https://api.anthropic.com/v1/messages`
-- Defines theme schema as a tool's `input_schema` (12 color properties, all `pattern: "^#[0-9a-fA-F]{6}$"`)
-- Forces tool use with `tool_choice: { type: "tool", name: "generate_theme" }`
-- Extracts `content[0].input` (the tool call input) and returns it as `Response.json({ colors: { ... } })`
+- Uses `output_config.format` with `type: "json_schema"` (GA, no beta headers needed)
+- All color properties use `pattern: "^#[0-9a-fA-F]{6}$"` for hex validation
+- All objects use `additionalProperties: false` (required by structured outputs)
+- Response comes in `content[0].text` as valid JSON — just `JSON.parse()` it
 - Model: `claude-sonnet-4-5-20250514` (fast, cheap, reliable for structured output)
 - Exports `onRequestPost` (not `onRequest`) matching existing function conventions
-- No new npm dependencies required
+- No new npm dependencies required (raw `fetch` to Anthropic API)
+
+**API call shape:**
+```typescript
+const response = await fetch('https://api.anthropic.com/v1/messages', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': context.env.ANTHROPIC_API_KEY,
+    'anthropic-version': '2023-06-01',
+  },
+  body: JSON.stringify({
+    model: 'claude-sonnet-4-5-20250514',
+    max_tokens: 1024,
+    system: SYSTEM_PROMPT,
+    messages: [{ role: 'user', content: `Generate a visual theme for studying: "${topic}"` }],
+    output_config: {
+      format: {
+        type: 'json_schema',
+        schema: THEME_JSON_SCHEMA,
+      },
+    },
+  }),
+})
+const data = await response.json()
+const theme = JSON.parse(data.content[0].text)
+return Response.json(theme)
+```
 
 **System prompt** includes:
 - WCAG AA contrast guidance (4.5:1 for `body` on `page`, `onPrimary` on `primary`)
