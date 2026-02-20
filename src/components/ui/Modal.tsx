@@ -5,9 +5,15 @@ interface ModalProps {
   onClose: () => void
   title: string
   children: ReactNode
+  size?: 'md' | 'lg'
 }
 
-export default function Modal({ open, onClose, title, children }: ModalProps) {
+const SIZE_CLASSES = {
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+}
+
+export default function Modal({ open, onClose, title, children, size = 'md' }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -25,7 +31,7 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="rounded-lg p-0 backdrop:bg-black/50 max-w-lg w-[calc(100%-2rem)] m-auto"
+      className={`rounded-lg p-0 backdrop:bg-black/50 ${SIZE_CLASSES[size]} w-[calc(100%-2rem)] m-auto`}
     >
       <div className="p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">

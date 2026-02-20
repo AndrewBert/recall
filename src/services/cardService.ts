@@ -2,6 +2,20 @@ import { apiFetch, remapCardToApi } from './api'
 import { queryClient } from '../queryClient'
 import { createNewCardRecord } from './fsrs'
 
+export async function addCardsBulk(
+  deckId: number,
+  pairs: { front: string; back: string }[],
+) {
+  await apiFetch('/api/cards/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ deckId, cards: pairs }),
+  })
+
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'cards'] })
+  queryClient.invalidateQueries({ queryKey: ['deck', deckId, 'due-cards'] })
+}
+
 export async function addCard(deckId: number, front: string, back: string) {
   const record = createNewCardRecord(deckId, front, back)
   const payload = remapCardToApi(record)

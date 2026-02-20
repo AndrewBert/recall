@@ -3,10 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router'
 import { useDeck } from '../hooks/useDeck'
 import { useDeckCards } from '../hooks/useDeckCards'
 import { useDueCards } from '../hooks/useDueCards'
-import { addCard, updateCard, deleteCard } from '../services/cardService'
+import { addCard, addCardsBulk, updateCard, deleteCard } from '../services/cardService'
 import { deleteDeck, updateDeck } from '../services/deckService'
 import CardList from '../components/card/CardList'
 import CardFormModal from '../components/card/CardFormModal'
+import BulkImportModal from '../components/card/BulkImportModal'
 import DeckFormModal from '../components/deck/DeckFormModal'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import EmptyState from '../components/ui/EmptyState'
@@ -25,6 +26,7 @@ export default function DeckDetailPage() {
   const [cardFormOpen, setCardFormOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CardRecord | null>(null)
   const [deletingCard, setDeletingCard] = useState<CardRecord | null>(null)
+  const [bulkImportOpen, setBulkImportOpen] = useState(false)
   const [editDeckOpen, setEditDeckOpen] = useState(false)
   const [deleteDeckOpen, setDeleteDeckOpen] = useState(false)
 
@@ -97,15 +99,23 @@ export default function DeckDetailPage() {
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Cards</h2>
-        <button
-          onClick={() => {
-            setEditingCard(null)
-            setCardFormOpen(true)
-          }}
-          className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors cursor-pointer"
-        >
-          + Add Card
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setBulkImportOpen(true)}
+            className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 active:bg-gray-200 transition-colors cursor-pointer"
+          >
+            Import
+          </button>
+          <button
+            onClick={() => {
+              setEditingCard(null)
+              setCardFormOpen(true)
+            }}
+            className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-700 transition-colors cursor-pointer"
+          >
+            + Add Card
+          </button>
+        </div>
       </div>
 
       {cardList.length === 0 ? (
@@ -144,6 +154,12 @@ export default function DeckDetailPage() {
             await addCard(deckId, front, back)
           }
         }}
+      />
+
+      <BulkImportModal
+        open={bulkImportOpen}
+        onClose={() => setBulkImportOpen(false)}
+        onSubmit={(pairs) => addCardsBulk(deckId, pairs)}
       />
 
       <ConfirmDialog
